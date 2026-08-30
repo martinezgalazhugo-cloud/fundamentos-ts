@@ -1,3 +1,16 @@
+==
+Materia: Diseño Frontend con Frameworks.
+
+Actividad: EC1 A1 Configuración del entorno
+
+Esta actividad trata sobre la configuracion del IDE Visual Studio Code para el desarrollo de las actividades y proyectos futuros para la materia, con el objetivo de que el alumno se familiarice con las herramientas.
+
+Alumno: Martinez Galaz Hugo
+
+Maestro: ESPINOZA ZEPEDA JALIL GERARDO
+
+==
+
 ===Referencias, indexados y comandos===
 
 src/ Código fuente que modificarás durante el EC1.

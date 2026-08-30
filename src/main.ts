@@ -12,7 +12,10 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <img src="${viteLogo}" class="vite" alt="Vite logo" />
   </div>
   <div>
-    <h1>Entorno frontend listo</h1>
+    <h1>Mi primer proyecto con Vite y TypeScript</h1>
+    <h2>Hugo Martinez Galaz</h2>
+    <h2>Diseño Front-End</h2>
+    <h3>Espero empezar a usar los benditos frontend</h3>
     <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
   </div>
   <button id="counter" type="button" class="counter"></button>

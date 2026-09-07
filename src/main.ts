@@ -163,6 +163,8 @@ function renderGifs(collection: Gif[]): void {
   gallery.innerHTML = collection.map(createGifCard).join("");
 }
 
+//El primer evento ejecuta la búsqueda sin recargar la página. El segundo restaura la colección completa
+//cuando el usuario borra todo el contenido del campo.
 form.addEventListener("submit", (event: SubmitEvent) => {
   event.preventDefault();
   const results = searchGifs(gifs, input.value);
@@ -176,6 +178,8 @@ input.addEventListener("input", () => {
 });
 
 //ME QUEDE EN EL PASO 15
+/*find devuelve el primer objeto coincidente o undefined. El operador ?. permite consultar title de manera
+segura y ?? establece el texto alternativo. La última línea realiza el primer renderizado al cargar la aplicación.*/
 const firstSafeGif = gifs.find((gif) => gif.rating === "g");
 console.log(`Primer GIF clasificación G: ${firstSafeGif?.title ?? "Ninguno"}`);
 renderGifs(gifs);

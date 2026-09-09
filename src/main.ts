@@ -1,12 +1,134 @@
 import "./styles/style.css";
+import { gifs } from "./data/gifs";
+import { clearGifDetail, renderGifDetail } from "./components/gif-detail";
+import { renderGallery } from "./components/gallery";
+import { renderStatus } from "./components/status";
+import { RequestStatus } from "./models/request-status.enum";
+import { findGifById, searchGifs } from "./services/gif.service";
+const app = document.querySelector<HTMLDivElement>("#app");
+if (!app) {
+  throw new Error("No se encontró el elemento #app.");
+}
+app.innerHTML = `
+ <main class="app-shell">
+ <header class="hero">
+ <p class="eyebrow">
+ EC1 - Organización modular
+</p>
+ <h1>GIFinder</h1>
+ <p>Explora una colección local de GIFs.</p>
+ </header>
+ <form id="search-form" class="search-form">
+ <label for="search-input">
+ Buscar por título, autor o etiqueta
+ </label>
+ <div class="search-row">
+ <input
+ id="search-input"
+ name="query"
+ type="search"
+ placeholder="Ejemplo: gato"
+ autocomplete="off"
+ />
+ <button type="submit">Buscar</button>
+ </div>
+ </form>
+ <p
+ id="search-status"
+ class="status"
+ role="status"
+ aria-live="polite"
+ ></p>
+<section
+ id="gif-gallery"
+ class="gallery"
+ aria-label="Resultados"
+ ></section>
+ <aside
+ id="gif-detail"
+ class="gif-detail-container"
+ aria-live="polite"
+ ></aside>
+ </main>
+`;
+const form = document.querySelector<HTMLFormElement>("#search-form");
+const input = document.querySelector<HTMLInputElement>("#search-input");
+const gallery = document.querySelector<HTMLElement>("#gif-gallery");
+const status = document.querySelector<HTMLParagraphElement>("#search-status");
+const detailContainer = document.querySelector<HTMLElement>("#gif-detail");
+if (!form || !input || !gallery || !status || !detailContainer) {
+  throw new Error("No se pudo inicializar la interfaz.");
+}
+form.addEventListener("submit", (event: SubmitEvent) => {
+  event.preventDefault();
+  renderStatus(RequestStatus.Loading, status);
+  const results = searchGifs(gifs, input.value);
+  renderGallery(results, gallery);
+  clearGifDetail(detailContainer);
+  if (results.length === 0) {
+    renderStatus(RequestStatus.Empty, status);
+    return;
+  }
+  renderStatus(RequestStatus.Success, status, results.length);
+});
+input.addEventListener("input", () => {
+  if (input.value.trim() !== "") {
+    return;
+  }
+  renderGallery(gifs, gallery);
+  clearGifDetail(detailContainer);
+  renderStatus(RequestStatus.Initial, status, gifs.length);
+});
+gallery.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof Element)) {
+    return;
+  }
+  const detailButton = target.closest<HTMLButtonElement>("[data-gif-id]");
+  if (!detailButton) {
+    return;
+  }
+  const gifId = detailButton.dataset.gifId;
+  if (!gifId) {
+    renderStatus(RequestStatus.Error, status);
+    return;
+  }
+  const selectedGif = findGifById(gifs, gifId);
+  if (!selectedGif) {
+    renderStatus(RequestStatus.Error, status);
+    return;
+  }
+  renderGifDetail(selectedGif, detailContainer);
+});
+detailContainer.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof Element)) {
+    return;
+  }
+  const closeButton = target.closest<HTMLButtonElement>(
+    '[data-action="close-detail"]',
+  );
+  if (!closeButton) {
+    return;
+  }
+  clearGifDetail(detailContainer);
+});
+renderGallery(gifs, gallery);
+renderStatus(RequestStatus.Initial, status, gifs.length);
+
+/*import "./styles/style.css";
 import type { Gif } from "./models/gif.interface";
+import { gifs } from "./data/gifs";
+import { normalizeText } from "./utils/text";
+import { matchesQuery, searchGifs } from "./services/gif.service";
+import { renderGallery, createGifCard } from "./components/gallery";
 /*
 import typescriptLogo from "./assets/typescript.svg";
 import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
 import { setupCounter } from "./counter.ts";
 */
-
+/*
 const MEDIA_URL = "https://media.giphy.com/media";
 const gifs: Gif[] = [
   {
@@ -41,7 +163,8 @@ const gifs: Gif[] = [
     rating: "g",
   },
 ];
-
+*/
+/*
 // Titulos de los gifs en la consola, codigo de prueba.
 //forEach sirve para ejecutar una acción por elemento. Cuando termines la comprobación puedes conservarlo
 //durante la práctica o eliminarlo antes de la entrega para evitar mensajes innecesarios.
@@ -51,6 +174,8 @@ gifs.forEach((gif, index) => {
 
 /*Selecciona el contenedor principal y valida que exista. Después genera el encabezado, el formulario, el
 mensaje de estado y la galería.*/
+
+/*
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
 if (!app) {
@@ -89,19 +214,23 @@ const status = document.querySelector<HTMLParagraphElement>("#search-status");
 
 /*La validación elimina la posibilidad de null para el resto del archivo. Después del if, TypeScript sabe que los
 cuatro elementos existen.*/
+
+/*
 if (!form || !input || !gallery || !status) {
   throw new Error("No se pudo inicializar los elementos del formulario.");
 }
+  */
 
 /*trim() elimina espacios al inicio y al final. toLocaleLowerCase('es-MX') convierte a minúsculas de acuerdo con
-la configuración del español de México. Así, la búsqueda no depende de mayúsculas ni espacios externos. */
-function normalizeText(value: string): string {
-  return value.trim().toLocaleLowerCase("es-MX");
-}
+la configuración del español de México. Así, la búsqueda no depende de mayúsculas ni espacios externos. 
+//function normalizeText(value: string): string {
+//  return value.trim().toLocaleLowerCase("es-MX");
+//}
+*/
 
 /*El operador ?? sustituye username por una cadena vacía cuando la propiedad es null o undefined. El operador
 spread ... inserta cada etiqueta en el arreglo de textos. Finalmente, join forma una sola cadena para buscar
-en ella.*/
+en ella.
 
 function matchesQuery(gif: Gif, query: string): boolean {
   const searchableText = [gif.title, gif.username ?? "", ...gif.tags].join(" ");
@@ -110,7 +239,7 @@ function matchesQuery(gif: Gif, query: string): boolean {
 
 /*La función recibe la colección y el texto escrito. Si la consulta queda vacía, devuelve una copia superficial
 mediante spread. Si existe texto, filter crea un arreglo nuevo con las coincidencias. El arreglo original no se
-modifica.*/
+modifica.
 function searchGifs(collection: Gif[], value: string): Gif[] {
   const query = normalizeText(value);
   if (!query) {
@@ -118,10 +247,11 @@ function searchGifs(collection: Gif[], value: string): Gif[] {
   }
   return collection.filter((gif) => matchesQuery(gif, query));
 }
+*/
 
 //ME QUEDE EN EL PASO 12: TRANSFORMAR UN OBJETO EN TARJETA HTML
 /*map transforma cada etiqueta en un texto con # y join une las etiquetas. El atributo loading="lazy" solicita
-que el navegador cargue las imágenes conforme sean necesarias.*/
+que el navegador cargue las imágenes conforme sean necesarias.
 function createGifCard(gif: Gif): string {
   const { title, url, username = "Autor no disponible", tags, rating } = gif;
   return `
@@ -142,7 +272,7 @@ function createGifCard(gif: Gif): string {
 
 /* El tipo de retorno void indica que la función actualiza la interfaz pero no produce un valor para quien la
 invoca. El operador ternario selecciona singular o plural. El retorno temprano evita continuar cuando no
-existen resultados.*/
+existen resultados.
 
 function renderGifs(collection: Gif[]): void {
   const total = collection.length;
@@ -162,7 +292,8 @@ function renderGifs(collection: Gif[]): void {
   }
   gallery.innerHTML = collection.map(createGifCard).join("");
 }
-
+  */
+/*
 //El primer evento ejecuta la búsqueda sin recargar la página. El segundo restaura la colección completa
 //cuando el usuario borra todo el contenido del campo.
 form.addEventListener("submit", (event: SubmitEvent) => {
@@ -176,10 +307,11 @@ input.addEventListener("input", () => {
     renderGifs(gifs);
   }
 });
-
+/*
 //ME QUEDE EN EL PASO 15
 /*find devuelve el primer objeto coincidente o undefined. El operador ?. permite consultar title de manera
 segura y ?? establece el texto alternativo. La última línea realiza el primer renderizado al cargar la aplicación.*/
+/*
 const firstSafeGif = gifs.find((gif) => gif.rating === "g");
 console.log(`Primer GIF clasificación G: ${firstSafeGif?.title ?? "Ninguno"}`);
 renderGifs(gifs);
